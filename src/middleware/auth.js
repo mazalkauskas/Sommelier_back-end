@@ -7,7 +7,7 @@ const isLoggedIn = (req, res, next) => {
     req.user = jwt.verify(token, jwtSecret);
     return next();
   } catch (err) {
-    return res.status(400).send({ err: 'Authorization faile' });
+    return res.status(400).send({ err: 'Authorization failed' });
   }
 };
 
