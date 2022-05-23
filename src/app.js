@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const userRoutes = require('./routes/users');
 const { serverPort } = require('./config');
 
 const app = express();
@@ -9,6 +10,8 @@ app.use(cors());
 app.get('/', (req, res) => {
   res.send({ msg: 'Server is running' });
 });
+
+app.use('/users/', userRoutes);
 
 app.all('*', (req, res) => {
   res.status(404).send({ err: 'Page not found' });
