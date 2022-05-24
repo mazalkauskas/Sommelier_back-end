@@ -23,8 +23,11 @@ router.post('/', isLoggedIn, async (req, res) => {
   try {
     const con = await mySQL.createConnection(mySQLConfig);
     const [data] = await con.execute(`
-        UPDATE collections
-        SET quantity = quantity + ${mySQL.escape(req.body.quantity)}
+        UPDATE collections SET quantity =
+        CASE
+        WHEN (quantity + ${mySQL.escape(req.body.quantity)}) >= 0
+        THEN quantity + ${mySQL.escape(req.body.quantity)} 
+        END
         WHERE user_id = ${mySQL.escape(req.user.accountId)}
         AND wine_id = ${mySQL.escape(req.body.wine_id)}
         `);
@@ -43,7 +46,7 @@ router.post('/', isLoggedIn, async (req, res) => {
 
     return res.send({ msg: 'Your wine collection succesfully updated' });
   } catch (err) {
-    if (err.errno === 3819) {
+    if (err.errno === 1048) {
       return res.status(400).send({ err: 'Your wine stocks are insufficient' });
     }
     return res.status(500).send({ err: 'Server issue occured. Please try again' });
