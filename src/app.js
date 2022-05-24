@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const userRoutes = require('./routes/users');
 const winesRoutes = require('./routes/wines');
+const collectionRoutes = require('./routes/collections');
 const { serverPort } = require('./config');
 
 const app = express();
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
 
 app.use('/users/', userRoutes);
 app.use('/wines/', winesRoutes);
+app.use('/my-wines', collectionRoutes);
 
 app.all('*', (req, res) => {
   res.status(404).send({ err: 'Page not found' });

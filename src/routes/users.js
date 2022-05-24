@@ -70,7 +70,7 @@ router.post('/change-password', isLoggedIn, async (req, res) => {
       return res.send(400).send({ msg: 'Incorrect old password' });
     }
 
-    const newPasswordHash = bcrypt.compareSync(req.body.newPassword, data[0].password);
+    const newPasswordHash = bcrypt.hashSync(req.body.newPassword, 10);
 
     await con.execute(`
     UPDATE users SET password = ${mySQL.escape(newPasswordHash)} WHERE id = ${mySQL.escape(req.user.accountId)}
