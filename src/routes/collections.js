@@ -11,7 +11,7 @@ router.get('/', isLoggedIn, async (req, res) => {
     const [data] = await con.execute(`
     SELECT title,region, quantity FROM collections
     JOIN wines ON (collections.wine_id=wines.id)
-    WHERE user_id = ${req.user.accountId}
+    WHERE user_id = ${req.user.accountId} AND quantity != 0
     `);
     return res.send(data);
   } catch (err) {
