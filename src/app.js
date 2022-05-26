@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/', (req, res) => {
-  res.send({ msg: 'Server is running' });
+  res.send({ msg: 'Welcome to Sommelier back-end' });
 });
 
 app.use('/', userRoutes);
