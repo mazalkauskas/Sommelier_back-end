@@ -4,10 +4,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const isLoggedIn = require('../middleware/auth');
 const { mySQLConfig, jwtSecret } = require('../config');
+const validation = require('../middleware/validation');
+const { registerSchema, loginSchema, resetPasswordSchema } = require('../middleware/validationSchemas');
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+router.post('/register', validation(registerSchema), async (req, res) => {
   try {
     const hash = bcrypt.hashSync(req.body.password, 10);
     const con = await mySQL.createConnection(mySQLConfig);
@@ -27,7 +29,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', validation(loginSchema), async (req, res) => {
   try {
     const con = await mySQL.createConnection(mySQLConfig);
     const [data] = await con.execute(`
@@ -39,11 +41,11 @@ router.post('/login', async (req, res) => {
     await con.end();
 
     if (data.length === 0) {
-      res.send(400).status({ err: 'User not found' });
+      return res.status(400).send({ err: 'User not found' });
     }
 
     if (!bcrypt.compareSync(req.body.password, data[0].password)) {
-      return res.status(400).send({ err: 'Incorrect password' });
+      return res.status(400).send({ err: 'Incorrect email or password' });
     }
 
     const token = jwt.sign({ accountId: data[0].id }, jwtSecret);
@@ -54,7 +56,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/change-password', isLoggedIn, async (req, res) => {
+router.post('/change-password', isLoggedIn, validation(resetPasswordSchema), async (req, res) => {
   try {
     const con = await mySQL.createConnection(mySQLConfig);
     const [data] = await con.execute(`

@@ -2,6 +2,8 @@ const express = require('express');
 const mySQL = require('mysql2/promise');
 const isLoggedIn = require('../middleware/auth');
 const { mySQLConfig } = require('../config');
+const validation = require('../middleware/validation');
+const { collectionPostSchema } = require('../middleware/validationSchemas');
 
 const router = express.Router();
 
@@ -19,7 +21,7 @@ router.get('/', isLoggedIn, async (req, res) => {
   }
 });
 
-router.post('/', isLoggedIn, async (req, res) => {
+router.post('/', isLoggedIn, validation(collectionPostSchema), async (req, res) => {
   try {
     const con = await mySQL.createConnection(mySQLConfig);
     const [data] = await con.execute(`
