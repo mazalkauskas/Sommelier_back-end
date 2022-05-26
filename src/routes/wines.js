@@ -10,7 +10,24 @@ const router = express.Router();
 router.get('/', isLoggedIn, async (req, res) => {
   try {
     const con = await mySQL.createConnection(mySQLConfig);
-    const [data] = await con.execute('SELECT * FROM wines');
+    const [data] = await con.execute(`
+    SELECT * FROM wines
+    `);
+    await con.end();
+
+    return res.send(data);
+  } catch (err) {
+    return res.status(500).send({ err: 'Server issue occured. Please try again' });
+  }
+});
+
+router.get('/page=:pageNr/size=:size', isLoggedIn, async (req, res) => {
+  try {
+    const con = await mySQL.createConnection(mySQLConfig);
+    const [data] = await con.execute(`
+    SELECT * FROM wines
+    LIMIT ${req.params.size}
+    OFFSET ${req.params.pageNr * req.params.size - req.params.size}`);
     await con.end();
 
     return res.send(data);
