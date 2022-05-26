@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
   res.send({ msg: 'Server is running' });
 });
 
-app.use('/users/', userRoutes);
+app.use('/', userRoutes);
 app.use('/wines/', winesRoutes);
 app.use('/my-wines', collectionRoutes);
 
